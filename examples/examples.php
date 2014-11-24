@@ -5,29 +5,19 @@ use \Kazoo\SDK;
 
 class HostileWorkEnvironment(){
 
-    private static $account_id = "a8b37eeeb898d78dda9f1ec011341205"; 
+	//TODO: get own account_id, 
+//    private static $account_id = "a8b37eeeb898d78dda9f1ec011341205"; 
     private static $sdk;
 
-
-
-    private function getSdkInstance(){
+    private function getKazoo(){
         $options = array('base_url' => 'http://192.168.56.101:8000');
         $auth_token = new User('admin', 'admin', 'sip.ing-local-dev.2600hz.com');
         $sdk = new SDK($auth_token, $options);
     }
 
-    private function getAccountId(){
-       return $this->account_id;
-    }
-
-	private function getAccount(){
-		$sdk = getSdkInstance();
-	    return $sdk->Account($this->getAccountId()); 
-	}
-
 	public function getDeviceCage($cage){
 		$filter = array('filter_cage' => $cage);
-		return $this->getAccount()->devices($filter)-getId();
+		return $this->getKazoo()->devices($filter)-getId();
 	}
 
 	public function hire($username, $first_name, $last_name, $email, $cage, restriction){
@@ -43,15 +33,15 @@ class HostileWorkEnvironment(){
 	public function fire($cage){
         $filter = array('filter_cage' => $cage);
 
-		$this->getAccount()->vmboxes($filter)->remove();
-		$this->getAccount()->users($filter)->remove();
-		$this->getAccount()->callflows($filter)->remove();
+		$this->getKazoo()->vmboxes($filter)->remove();
+		$this->getKazoo()->users($filter)->remove();
+		$this->getKazoo()->callflows($filter)->remove();
 
 	}
 
 	private function createCallflow($device_id, $vmbox_id, $cage){
 
-	    $callflow = $this->getAccount()->callflow();
+	    $callflow = $this->getKazoo()->callflow();
 	    $callflow->numbers = array($ext);
 	    $flow = new stdClass();
 
@@ -71,7 +61,7 @@ class HostileWorkEnvironment(){
 
 
 	private function setRestriction($device_id, $restrictions){
-    	$device = $this->getAccount->device($device_id);
+    	$device = $this->getKazoo->device($device_id);
 
     	foreach ($restrictions as $key => $value){
     		$device->call_restriction->$key = $value;
@@ -81,25 +71,25 @@ class HostileWorkEnvironment(){
 	}
 
 	private function assignDevice($device_id, $owner_id, $cage){
-	    $device = $this->getAccount->vmbox($vmbox_id);
+	    $device = $this->getKazoo->vmbox($vmbox_id);
 	    $device->owner_id = $owner_id;
 	    $device->cage = $cage;
 	    $device->save();
 	}
 
 	private function createVmbox($vm_name, $vm_number, $owner_id){  
-	    $vmbox = $this->getAccount()->vmbox();
+	    $vmbox = $this->getKazoo()->vmbox();
 	    $vmbox->name = $vm_name;
 	    $vmbox->owner_id = $owner_id;
 	    $vmbox->mailbox = $vm_nmber;
 	    $vmbox->cage = $vm_number;
 	    $vmbox->save();
-
+ 		
 	    return $vmbox->getId();
 	}
 
 	private function createUser($user_name, $first_name, $last_name, $email, $cage){
-	    $user = $this->getAccount()->vmbox();
+	    $user = $this->getKazoo()->vmbox();
 	    $user->username = $user_name;
 	    $user->first_name = $first_name;
 	    $user->last_name = $last_name;
@@ -110,8 +100,11 @@ class HostileWorkEnvironment(){
 	    return $user->getId();
 	}
 
+
+// Code below should be moved elsewhere, but keep, since they are good examples.
+
     private function createDevice($device_name){
-	    $device = $this->getAccount();
+	    $device = $this->getKazoo();
 	    $device->name = $device_name;
 	    $device->save();
 
@@ -119,7 +112,7 @@ class HostileWorkEnvironment(){
 	}
 
 	private function createAccount($sdk, $account_name) {
-        $account = $this->getAccount();
+        $account = $this->getKazoo();
 	    $account = $sdk->Account(null);
 	    $account->name = $account_name;
 	    $account->save();
