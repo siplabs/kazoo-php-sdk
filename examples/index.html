@@ -6,8 +6,8 @@
   <div class="container">
   <div class="row">
     <div class=".col-md-4">
-      <h2>New Hire Form</h2>
-      <form role="form"  action="example.php" method="post">
+      <h2 class=".h2">New Hire Form</h2>
+      <form class="form-horizontal" role="form"  action="example.php" method="post">
         <div class="form-group">
           <label for="first">First name:</label>
           <input type="first" class="form-control" id="fname" placeholder="Enter First Name">
@@ -21,8 +21,8 @@
           <input type="email" class="form-control" id="email" placeholder="Enter email">
         </div>
         <div class="form-group">
-          <label for="cube">Cubicle:</label> 
-          <select>
+          <label for="cage">Cage:</label> 
+          <select class="form-control">
             <option value="1001">1001</option>
             <option value="1002">1002</option>
             <option value="1003">1003</option>
@@ -35,24 +35,26 @@
             <option value="1010">1010</option>
          </select>
         </div>
-        <div class="checkbox">
-           <input type="checkbox" name="restriction" value="carribean"><label>Carribean</label>
-        </div> 
-        <div class="checkbox">
-           <input type="checkbox" name="restriction" value="international"><label>International</label>
-        </div>
-        <div class="checkbox">
-           <input type="checkbox" name="restriction" value="tollfree"><label>Toll Free</label>
-        </div> 
-        <button type="submit" class="btn btn-default">Hire</button> 
-        
-      </form>  
-    </div>
-    <div>
-      <form role="form"  action="example.php" method="post">
+        <div> 
+          <label for="restrictions">Call Restrictions:</label>
+          <div class="checkbox">
+             <input type="checkbox" name="restriction" value="carribean"> Carribean 
+          </div> 
+          <div class="checkbox">
+             <input type="checkbox" name="restriction" value="international">  International
+            
+          </div>
+          <div class="checkbox">
+           <input type="checkbox" name="restriction" value="tollfree" > Toll Free
+          </div>
+        </div>  
+        <button type="submit" class="btn btn-lg btn-success">Hire</button> 
+      </form> 
+      <h2>Fire employee form</h2>
+      <form class="form-horizontal" role="form"  action="example.php" method="post">
       <div class="form-group"
-        <label for="cube">Cubicle:</label>  
-        <select>
+        <label for="cage">Cage:</label>  
+        <select class="form-control">
           <option value="1001">1001</option>
           <option value="1002">1002</option>
           <option value="1003">1003</option>
@@ -65,7 +67,7 @@
           <option value="1010">1010</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-default">Fire!</button> 
+      <button type="submit" class="btn btn-lg btn-danger" >Fire!</button> 
       </form>
     </div>  
   </div>
