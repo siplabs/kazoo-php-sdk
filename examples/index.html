@@ -1,10 +1,18 @@
 <html>
-
-<form action="demo_form.asp" method="get">
+<div class="container">
+<form role="form"  action="example.php" method="get">
+<div class="form-group">
   First name: <input type="text" name="fname"><br>
-  Last name: <input type="text" name="lname"><br>
-  Email: <input type="text" name="email"><br>
-  Cubicle: 
+</div>
+<div role="form">
+  <label for="last"> Last name:</label>
+  <input type="text" name="lname"><br>
+</div>
+  <label for="email">Email:</lavel>
+  <input type="text" name="email"><br>
+</div>
+<div role="form">
+  <label for="cube">Cubicle:</label> 
 <select>
   <option value="1001">1001</option>
   <option value="1002">1002</option>
@@ -17,14 +25,11 @@
   <option value="1009">1009</option>
   <option value="1010">1010</option>
 </select>
-
-<br>
-
-  Carribean <input type="checkbox" name="restriction" value="carribean"><br>
-  International <input type="checkbox" name="restriction" value="international"><br>
-  Toll Free <input type="checkbox" name="restriction" value="tollfree"><br>
-  <input type="submit" value="Hire">
-
+  <label>Carribean<input type="checkbox" name="restriction" value="carribean"><label>
+  International <input type="checkbox" name="restriction" value="international"><label>
+  Toll Free <input type="checkbox" name="restriction" value="tollfree">
+  <button type="submit" class="btn btn-default">Hire</button> 
+</div>
 </form>
 
 <br>
@@ -46,5 +51,6 @@ Cubicle:
 
 <input type="submit" value="Fire">
 </form>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </html>
