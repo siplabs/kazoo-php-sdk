@@ -5,8 +5,8 @@ use \Kazoo\SDK;
 
 class HostileWorkEnvironment(){
 
-	//TODO: get own account_id, 
-//    private static $account_id = "a8b37eeeb898d78dda9f1ec011341205"; 
+    //TODO: get own account_id, 
+    //private static $account_id = "a8b37eeeb898d78dda9f1ec011341205";
     private static $sdk;
 
     private function getKazoo(){
@@ -15,108 +15,108 @@ class HostileWorkEnvironment(){
         $sdk = new SDK($auth_token, $options);
     }
 
-	public function getDeviceCage($cage){
-		$filter = array('filter_cage' => $cage);
-		return $this->getKazoo()->devices($filter)-getId();
-	}
-
-	public function hire($username, $first_name, $last_name, $email, $cage, restriction){
-	    $user_id = createUser($username, $first_name, $last_name, $email, $cage);
-	    $device_id = getDeviceCage($cage);
-	    assignDevice($device_id, $user_id);
-	    $vmbox_id = createVmbox($first_name, $cage, $user_id);
-	    createCallflow($ext, $device_id, $vmbox_id);
-
-	}
+    public function hire($username, $first_name, $last_name, $email, $cage, restriction){
+        $user_id = createUser($username, $first_name, $last_name, $email, $cage);
+        $device_id = getDeviceCage($cage);
+        assignDevice($device_id, $user_id);
+        setRestriction($device_id, $restrictions);
+        $vmbox_id = createVmbox($first_name, $cage, $user_id);
+        createCallflow($ext, $device_id, $vmbox_id);
+    }
 
 
-	public function fire($cage){
+    public function fire($cage){
         $filter = array('filter_cage' => $cage);
 
-		$this->getKazoo()->vmboxes($filter)->remove();
-		$this->getKazoo()->users($filter)->remove();
-		$this->getKazoo()->callflows($filter)->remove();
+        $this->getKazoo()->vmboxes($filter)->remove();
+        $this->getKazoo()->users($filter)->remove();
+        $this->getKazoo()->callflows($filter)->remove();
+    }
 
-	}
+    private function createUser($user_name, $first_name, $last_name, $email, $cage){
+        $user = $this->getKazoo()->vmbox();
 
-	private function createCallflow($device_id, $vmbox_id, $cage){
+        $user->username = $user_name;
+        $user->first_name = $first_name;
+        $user->last_name = $last_name;
+        $user->email = $email;
+        $user->cage = $cage;
+        $user->save();
 
-	    $callflow = $this->getKazoo()->callflow();
-	    $callflow->numbers = array($ext);
-	    $flow = new stdClass();
+        return $user->getId();
+    }
 
-	    $flow->module = "device";
-	    $flow->data->id = $device_id;
-	    $flow->data->timeout = "30";
-	    $flow->data->can_call_self = false;
-	    $flow->children->_->data->id = $vmbox_id;
-	    $flow->children->_->module = "voicemail";
-	    $flow->children->_->children = new stdClass();
+    public function getDeviceCage($cage){
+        $filter = array('filter_cage' => $cage);
+        
+        return $this->getKazoo()->devices($filter)-getId();
+    }
 
-	    $callflow->flow = $flow;
-	    $callflow->cage = $cage;
+    private function assignDevice($device_id, $owner_id, $cage){
+        $device = $this->getKazoo->vmbox($vmbox_id);
 
-	    $callflow->save();
-	}
+        $device->owner_id = $owner_id;
+        $device->cage = $cage;
+        $device->save();
+    }
 
+    private function setRestriction($device_id, $restrictions){
+        $device = $this->getKazoo->device($device_id);
 
-	private function setRestriction($device_id, $restrictions){
-    	$device = $this->getKazoo->device($device_id);
+        foreach ($restrictions as $key => $value){
+            $device->call_restriction->$key = $value;
+        }
 
-    	foreach ($restrictions as $key => $value){
-    		$device->call_restriction->$key = $value;
-    	}
+        $device->save()
+    }
 
-    	$device->save()
-	}
+    private function createVmbox($vm_name, $vm_number, $owner_id){  
+        $vmbox = $this->getKazoo()->vmbox();
 
-	private function assignDevice($device_id, $owner_id, $cage){
-	    $device = $this->getKazoo->vmbox($vmbox_id);
-	    $device->owner_id = $owner_id;
-	    $device->cage = $cage;
-	    $device->save();
-	}
+        $vmbox->name = $vm_name;
+        $vmbox->owner_id = $owner_id;
+        $vmbox->mailbox = $vm_nmber;
+        $vmbox->cage = $vm_number;
+        $vmbox->save();
 
-	private function createVmbox($vm_name, $vm_number, $owner_id){  
-	    $vmbox = $this->getKazoo()->vmbox();
-	    $vmbox->name = $vm_name;
-	    $vmbox->owner_id = $owner_id;
-	    $vmbox->mailbox = $vm_nmber;
-	    $vmbox->cage = $vm_number;
-	    $vmbox->save();
- 		
-	    return $vmbox->getId();
-	}
+        return $vmbox->getId();
+    }
 
-	private function createUser($user_name, $first_name, $last_name, $email, $cage){
-	    $user = $this->getKazoo()->vmbox();
-	    $user->username = $user_name;
-	    $user->first_name = $first_name;
-	    $user->last_name = $last_name;
-	    $user->email = $email;
-	    $user->cage = $cage;
-	    $user->save();
+    private function createCallflow($device_id, $vmbox_id, $cage){
+        $callflow = $this->getKazoo()->callflow();
+        $flow = new stdClass();
 
-	    return $user->getId();
-	}
+        $flow->module = "device";
+        $flow->data->id = $device_id;
+        $flow->data->timeout = "30";
+        $flow->data->can_call_self = false;
+        $flow->children->_->data->id = $vmbox_id;
+        $flow->children->_->module = "voicemail";
+        $flow->children->_->children = new stdClass();
+
+        $callflow->numbers = array($ext);
+        $callflow->flow = $flow;
+        $callflow->cage = $cage;
+        $callflow->save();
+    }
 
 
-// Code below should be moved elsewhere, but keep, since they are good examples.
+// Code below should be moved elsewhere, but kept, since they are good examples.
 
     private function createDevice($device_name){
-	    $device = $this->getKazoo();
-	    $device->name = $device_name;
-	    $device->save();
+        $device = $this->getKazoo();
+        $device->name = $device_name;
+        $device->save();
 
-	    return $device->getId();
-	}
+        return $device->getId();
+    }
 
-	private function createAccount($sdk, $account_name) {
+    private function createAccount($sdk, $account_name) {
         $account = $this->getKazoo();
-	    $account = $sdk->Account(null);
-	    $account->name = $account_name;
-	    $account->save();
+        $account = $sdk->Account(null);
+        $account->name = $account_name;
+        $account->save();
 
-	    return $account->getId();
-	}
+        return $account->getId();
+    }
 }
