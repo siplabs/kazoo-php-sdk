@@ -3,127 +3,109 @@ require_once "vendor/autoload.php";
 use \Kazoo\AuthToken\User;
 use \Kazoo\SDK;
 
-$options = array('base_url' => 'http://192.168.56.101:8000');
-$auth_token = new User('admin', 'admin', 'sip.ing-local-dev.2600hz.com');
+class HostileWorkEnvironment(){
+        private static $account_id = "gjaflkjsljfa;sldkjfs"; 
+        private static $sdk;
+      
+        private function getSdk(){
+            $options = array('base_url' => 'http://192.168.56.101:8000');
+            $auth_token = new User('admin', 'admin', 'sip.ing-local-dev.2600hz.com');
+            $sdk = new SDK($auth_token, $options);
+        }       
+ 
+        private function getAccountId(){
+           return $this->account_id;
+        }
 
-$sdk = new SDK($auth_token, $options);
+	private function getAccount(){
+	    return $sdk->Account($this->getAccountId()); 
+	}
 
-$account_id = createAccount($sdk, "fuckyousean6");
-$user_id = createUser($sdk, $account_id, "usersean", "first", "last");
-$device_id = createDevice($sdk, $account_id, "dev_name");
-assignDevice($sdk, $account_id, $device_id, $user_id);
-$vmbox_id = createVmbox($sdk, $account_id, "vmbox", "1111");
-assignVmbox($sdk, $account_id, $vmbox_id, $user_id);
+	public function hire($username, $first_name, $last_name, $email, $ext, restriction){
+	    $user_id = createUser($username, $first_name, $last_name, $email);
+	    assignDevice($ext, $user_id);
+	    $vmbox_id = createVmbox($user_id);
+	    createCallflow($user_id, $vmbox);
+	}
 
+	public function fire($ext){
+	    resetDevice($ext);
+	    deleteVmbox($ext);
+	    deleteUser($ext);
+	    resetCallflow($ext);
+	}
 
+	private function deleteDevice(){
+                        
+	}
+ 
+	private function deleteUser(){
+            
+	}
 
+	private function deleteVmbox(){
 
-function deleteDevice(){
+	}
 
-}
+	private function createCallflow(){
 
-function deleteUser(){
+	}
 
-}
+	private function deleteCallflow(){
 
-function deleteVmbox(){
+	}
 
-}
+	private function setRestriction($sdk, $restriction){
+             
 
-function createCallflow(){
+	}
 
-}
+	private function assignDevice($device_id, $owner_id, $ext){
+	    $device = $this->account->vmbox($vmbox_id);
+	    $device->owner_id = $owner_id;
+	    $device->save();
+	}
 
-function deleteCallflow(){
+	private function assignVmbox($vmbox_id, $owner_id){
+	    $vmbox = $this->account->vmbox($vmbox_id);
+	    $vmbox->owner_id = $owner_id;
+	    $vmbox->save();
+	}
 
-}
+	private function createVmbox($vm_name, $vm_number, $owner_id){  
+	    $vmbox = $this->getAccount()->vmbox();
+	    $vmbox->name = $vm_name;
+	    $vmbox->owner_id = $owner_id;
+	    $vmbox->mailbox = $vm_nmber;
+	    $vmbox->save();
 
+	    return $vmbox->getId();
+	}
 
-function newHire($sdk, $username, $first_name, $last_name, $email, $ext, restriction){
-    createUser($sdk, $username, $first_name, $last_name, $email);
-    assignDevice($sdk, )
-    createVmbox();
-    createCallflow();
+	private function createUser($sdk, $account_id, $user_name, $first_name, $last_name){
+	    $user = $this->getAccount()->vmbox();
+	    $user->username = $user_name;
+	    $user->first_name = $first_name;
+	    $user->last_name = $last_name;
+	    $user->save();
 
-}
+	    return $user->getId();
+	}
 
-function newFire(){
-    resetDevice();
-    deleteVmbox();
-    deleteUser();
-    resetCallflow();
+        private function createDevice($device_name){
+	    $device = $this->getAccount();
+	    $device->name = $device_name;
+	    $device->save();
 
-}
+	    return $device->getId();
+	}
 
+	private function createAccount($sdk, $account_name) {
+            $account = $this->getAccount();
+	    $account = $sdk->Account(null);
+	    $account->name = $account_name;
+	    $account->save();
 
-function setRestriction($sdk, $restriction){
-
-
-}
-
-
-
-
-function assignDevice($sdk, $account_id, $device_id, $owner_id, $ext){
-
-    $device = $sdk->Account($account_id)->device($device_id);
-    $device->owner_id = $owner_id;
-    $device->save();
-
-}
-
-function assignVmbox($sdk, $account_id, $vmbox_id, $owner_id){
-
-    $vmbox = $sdk->Account($account_id)->vmbox($vmbox_id);
-    $vmbox->owner_id = $owner_id;
-    $vmbox->save();
-
-}
-
-function createVmbox($sdk, $account_id, $vm_name, $vm_number, $owner_id){
-
-    $vmbox = $sdk->Account($account_id)->vmbox();
-    $vmbox->name = $vm_name;
-    $vmbox->owner_id = $owner_id;
-    $vmbox->mailbox = $vm_nmber;
-    $vmbox->save();
-
-    return $vmbox->getId();
-}
-
-function getAccount(){
-
-    return $sdk->Account($account_id)
-}
-
-
-
-function createUser($sdk, $account_id, $user_name, $first_name, $last_name){
-
-    $user = $sdk->Account($account_id)->user();
-    $user->username = $user_name;
-    $user->first_name = $first_name;
-    $user->last_name = $last_name;
-    $user->save();
-
-    return $user->getId();
-}
-
-function createDevice($sdk, $account_id, $device_name){
-
-    $device = $sdk->Account($account_id)->device();
-    $device->name = $device_name;
-    $device->save();
-
-    return $device->getId();
-}
-
-function createAccount($sdk, $account_name) {
-
-    $account = $sdk->Account(null);
-    $account->name = $account_name;
-    $account->save();
-
-    return $account->getId();
-
+	    return $account->getId();
+	}
 }
