@@ -12,36 +12,47 @@ class HostileWorkEnvironment
 
     private function getKazoo(){
         if (is_null(self::$sdk)){
-        	$options = array('base_url' => 'http://10.26.0.127:8000');
-        	$auth_token = new User('admin', 'admin', 'sip.test.2600hz.com');
-        	self::$sdk = new SDK($auth_token, $options);
+            $options = array('base_url' => 'http://10.26.0.127:8000');
+            $auth_token = new User('admin', 'admin', 'sip.test.2600hz.com');
+            self::$sdk = new SDK($auth_token, $options);
         }
 
         return self::$sdk; 
     }
 
-
-
-    public function hire($username, $first_name, $last_name, $email, $cage, $restriction){
-        $user_id = createUser($username, $first_name, $last_name, $email, $cage);
-        $device_id = getDeviceCage($cage);
-        assignDevice($device_id, $user_id);
-        setRestriction($device_id, $restrictions);
-        $vmbox_id = createVmbox($first_name, $cage, $user_id);
-        createCallflow($ext, $device_id, $vmbox_id);
+    public function hire($first_name, $last_name, $email, $cage, $restriction){
+        $username = $first_name . '_' . $last_name; 
+      
+        $user_id   = $this->createUser($username, $first_name, $last_name, $email, $cage);
+        $device_id = $this->getDeviceCage($cage);
+        var_dump($device_id);  
+        $this->assignDevice($device_id, $user_id);
+        $this->setRestriction($device_id, $restriction);
+      
+        $vmbox_id = $this->createVmbox($username, $cage, $user_id);
+      
+        $this->createCallflow($cage, $device_id, $vmbox_id);
     }
-
 
     public function fire($cage){
         $filter = array('filter_cage' => $cage);
 
-        $this->getKazoo()->vmboxes($filter)->remove();
-        $this->getKazoo()->users($filter)->remove();
-        $this->getKazoo()->callflows($filter)->remove();
+        $vmboxes = $this->getKazoo()->Account()->VMBoxes($filter);
+        foreach ($vmboxes as $element){
+            $element->fetch()->remove();
+        }
+        $users = $this->getKazoo()->Account()->Users($filter);
+        foreach ($users as $element){
+            $element->fetch()->remove();
+        }
+        $callflows =  $this->getKazoo()->Account()->Callflows($filter);
+        foreach ($callflows as $element){
+            $element->fetch()->remove();
+        }
     }
 
     private function createUser($user_name, $first_name, $last_name, $email, $cage){
-        $user = $this->getKazoo()->vmbox();
+        $user = $this->getKazoo()->Account()->User();
 
         $user->username = $user_name;
         $user->first_name = $first_name;
@@ -56,41 +67,46 @@ class HostileWorkEnvironment
     public function getDeviceCage($cage){
         $filter = array('filter_cage' => $cage);
         
-        return $this->getKazoo()->devices($filter)-getId();
+        $devices = $this->getKazoo()->Account()->Devices($filter);
+     
+        var_dump($devices);  
+ 
+        foreach ($devices as $entity){
+           $device = $entity->fetch();
+           
+           return $device->id;
+        }
     }
 
-    private function assignDevice($device_id, $owner_id, $cage){
-        $device = $this->getKazoo()->vmbox($vmbox_id);
-
+    private function assignDevice($device_id, $owner_id){
+        $device = $this->getKazoo()->Account()->Device($device_id);
         $device->owner_id = $owner_id;
-        $device->cage = $cage;
         $device->save();
     }
 
     private function setRestriction($device_id, $restrictions){
-        $device = $this->getKazoo()->device($device_id);
+        //$device = $this->getKazoo()->Account()->Device($device_id);
 
-        foreach ($restrictions as $key => $value){
-            $device->call_restriction->$key = $value;
-        }
+        //foreach ($restrictions as $key => $value){
+        //    $device->call_restriction->$key = $value;
+        //}
 
-        $device->save();
+        //$device->save();
     }
 
     private function createVmbox($vm_name, $vm_number, $owner_id){  
-        $vmbox = $this->getKazoo()->vmbox();
-
+        $vmbox = $this->getKazoo()->Account()->VMBox();
         $vmbox->name = $vm_name;
         $vmbox->owner_id = $owner_id;
-        $vmbox->mailbox = $vm_nmber;
+        $vmbox->mailbox = (string) $vm_number;
         $vmbox->cage = $vm_number;
         $vmbox->save();
 
         return $vmbox->getId();
     }
 
-    private function createCallflow($device_id, $vmbox_id, $cage){
-        $callflow = $this->getKazoo()->callflow();
+    private function createCallflow($cage, $device_id, $vmbox_id){
+        $callflow = $this->getKazoo()->Account()->Callflow();
         $flow = new stdClass();
 
         $flow->module = "device";
@@ -101,7 +117,7 @@ class HostileWorkEnvironment
         $flow->children->_->module = "voicemail";
         $flow->children->_->children = new stdClass();
 
-        $callflow->numbers = array($ext);
+        $callflow->numbers = array($cage);
         $callflow->flow = $flow;
         $callflow->cage = $cage;
         $callflow->save();

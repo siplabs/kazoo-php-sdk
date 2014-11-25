@@ -10,8 +10,12 @@
               $email        = $_POST['email'];
               $restrictions = $_POST['restrictions']; 
 
+              var_dump($_POST); 
+
+
               $employee = new HostileWorkEnvironment;
               $employee->hire($first_name, $last_name, $email, $cage, $restrictions);
+              
           }
       ?>
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -46,25 +50,25 @@
                <div class="form-group">
                   <label for="first" class="col-sm-2 control-label">First name:</label>
                   <div class="col-sm-8">
-                      <input type="first" class="form-control" id="fname" placeholder="Enter First Name">
+                      <input type="first" class="form-control" name="fname" placeholder="Enter First Name">
                   </div>
                </div>
                <div class="form-group">
                   <label for="last" class="col-sm-2 control-label">Last name:</label>
                   <div class="col-sm-8">
-                      <input type="last" class="form-control" id="lname" placeholder="Enter Last Name">
+                      <input type="last" class="form-control" name="lname" placeholder="Enter Last Name">
                   </div>
                </div>
                <div class="form-group">
                   <label for="email" class="col-sm-2 control-label">Email:</label>
                   <div class="col-sm-8">
-                      <input type="email" class="form-control" id="email" placeholder="Enter email">
+                      <input type="email" class="form-control" name="email" placeholder="Enter email">
                   </div>
                </div>
                <div class="form-group">
                   <label for="cage" class="col-sm-2 control-label">Cage:</label> 
                   <div class="col-sm-8">
-                     <select class="form-control">
+                     <select name="cage" class="form-control">
                         <option value="1001">1001</option>
                         <option value="1002">1002</option>
                         <option value="1003">1003</option>
@@ -81,7 +85,7 @@
                <div class="form-group">
                   <label for="restrictions" class="col-sm-2 control-label">Restrictions:</label> 
                   <div class="col-sm-8">
-                     <select class="form-control">
+                     <select class="form-control" name="restriction">
                         <option value="international">International</option>
                         <option value="domestic">Domestic</option>
                         <option value="local">Local</option>
@@ -95,6 +99,7 @@
                   </div>
                </p>
             </form>
+            <
       </div>
       <div class="col-lg-2"></div>
    </div>
