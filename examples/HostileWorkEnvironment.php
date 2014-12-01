@@ -25,7 +25,6 @@ class HostileWorkEnvironment
       
         $user_id   = $this->createUser($username, $first_name, $last_name, $email, $cage);
         $device_id = $this->getDeviceCage($cage);
-        var_dump($device_id);  
         $this->assignDevice($device_id, $user_id);
         $this->setRestriction($device_id, $restriction);
       
@@ -69,8 +68,6 @@ class HostileWorkEnvironment
         
         $devices = $this->getKazoo()->Account()->Devices($filter);
      
-        var_dump($devices);  
- 
         foreach ($devices as $entity){
            $device = $entity->fetch();
            
