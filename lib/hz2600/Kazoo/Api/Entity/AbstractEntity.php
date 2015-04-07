@@ -57,12 +57,12 @@ abstract class AbstractEntity extends AbstractResource
      */
     public function __call($name, $arguments) {
         $collection_name = '\\Kazoo\\Api\\Collection\\' . $name;
-        if (@class_exists($collection_name)) {
+        if (class_exists($collection_name)) {
             return new $collection_name($this, $arguments);
         }
 
         $entity_name = '\\Kazoo\\Api\\Entity\\' . $name;
-        if (@class_exists($entity_name)) {
+        if (class_exists($entity_name)) {
             return new $entity_name($this, $arguments);
         }
 
@@ -183,18 +183,35 @@ abstract class AbstractEntity extends AbstractResource
         }
 
         $id = $this->getId();
-        $payload = $this->getPayload();
         $this->setTokenValue($this->getEntityIdName(), $id);
 
         if (empty($id)) {
+            $payload = $this->getPayload();        
             $response = $this->put($payload, $append_uri);
         } else {
-            $response = $this->post($payload, $append_uri);
+            //$response = $this->post($payload, $append_uri);
+            //var_dump($payload);
+            $shell = new stdClass();
+            $shell->data = $this->entity;
+            $payload = json_encode($shell);
+            $response = $this->patch($payload, $append_uri);
         }
 
         $entity = $response->getData();
         $this->setEntity($entity);
 
+        return $this;
+    }
+
+    /**
+     * Saves the current entity, if it does not have an
+     * id then it will be created.
+     *
+     */
+    public function update() {
+        $shell = new stdClass();
+        $shell->data = $this->entity;
+        var_dump(json_encode($shell));
         return $this;
     }
 
@@ -357,7 +374,6 @@ abstract class AbstractEntity extends AbstractResource
     protected function getPayload() {
         $shell = new stdClass();
         $shell->data = $this->getEntity();
-
         return json_encode($shell);
     }
 

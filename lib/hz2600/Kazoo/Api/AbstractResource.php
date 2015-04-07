@@ -130,6 +130,15 @@ abstract class AbstractResource implements ChainableInterface
      *
      *
      */
+    protected function patch($payload, $append_uri = null) {
+        $uri = $this->getUri($append_uri);
+        return $this->getSDK()->patch($uri, $payload);
+    }
+
+    /**
+     *
+     *
+     */
     protected function put($payload, $append_uri = null) {
         $uri = $this->getUri($append_uri);
         return $this->getSDK()->put($uri, $payload);
